@@ -32,13 +32,14 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ocsane-figueira_petshop-auth-service -Dsonar.organization=ocsane-figueira
 
       - name: Login no Docker Hub
-        if: success()
+        if: success() && github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extrair metadata para o Docker
+        if: success() && github.ref == 'refs/heads/main'
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -48,7 +49,7 @@ jobs:
             type=ref,event=branch
 
       - name: Build e Push da Imagem Docker
-        if: success()
+        if: success() && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
           context: .
