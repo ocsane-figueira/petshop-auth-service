@@ -1,68 +1,127 @@
-# auth-service
+# 🔐 Petshop Authentication Service (`petshop-auth-service`)
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Este repositório contém o **Microsserviço de Autenticação** da arquitetura distribuída do Petshop. Ele é responsável por gerenciar credenciais de acesso, validar usuários e gerar tokens assinados digitalmente.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+---
 
-## Running the application in dev mode
+## 🏗️ Papel e Funcionalidade no Ecossistema
 
-You can run your application in dev mode that enables live coding using:
+O `auth-service` atua de forma isolada na arquitetura:
+1. **Segurança Centralizada**: Gera credenciais seguras para todos os microsserviços do ecossistema.
+2. **SmallRye JWT / RSA**: Utiliza criptografia de chave pública/privada (RSA com chaves de 2048 bits) para assinar tokens JWT. O Kong API Gateway ou outros serviços usam apenas a chave pública para validar as requisições, sem a necessidade de consultar o microsserviço de autenticação a cada requisição (zero overhead e latência reduzida).
+3. **Sem Estado (Stateless)**: O serviço não mantém sessão em memória ou banco de dados, facilitando a escalabilidade horizontal e resiliência a falhas.
 
-```shell script
+---
+
+## 🛠️ Tecnologias Principais
+
+* **Java 21** e **Quarkus Framework**
+* **Quarkus SmallRye JWT Build** (Geração segura de tokens JWT)
+* **Quarkus Micrometer & Prometheus Registry** (Métricas de JVM e HTTP)
+* **Maven** (Gerenciador de build e dependências)
+
+---
+
+## 💻 Como Rodar o Serviço Localmente
+
+### Pré-requisitos
+* Java 21 JDK instalado localmente (ou via Docker)
+* Maven instalado localmente (ou use o `./mvnw` incluso)
+
+### Executando em Modo de Desenvolvimento (Live Coding)
+
+Para iniciar o Quarkus com recarregamento em tempo real (qualquer alteração no código é refletida instantaneamente):
+
+```bash
 ./mvnw compile quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+* **Porta local padrão**: `8081`
+* **Painel Dev UI do Quarkus**: `http://localhost:8081/q/dev/`
 
-## Packaging and running the application
+### Empacotamento e Execução em Produção
 
-The application can be packaged using:
+Para compilar e gerar o pacote de distribuição otimizado:
 
-```shell script
+```bash
 ./mvnw package
 ```
+O build produzirá os arquivos compilados no diretório `target/quarkus-app/`. Para iniciar o microsserviço empacotado:
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```bash
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+---
 
-## Creating a native executable
+## 🧪 Testes Automatizados e Cobertura
 
-You can create a native executable using:
+O projeto possui suíte de testes unitários e de integração utilizando **JUnit 5**, **Mockito** e **RestAssured**:
 
-```shell script
-./mvnw package -Dnative
+### Executar Testes Locais
+```bash
+./mvnw clean verify
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+### Visualizar Cobertura de Código (Jacoco)
+Após a execução bem-sucedida do comando acima:
+1. Navegue até a pasta `target/jacoco-report/`.
+2. Abra o arquivo `index.html` em qualquer navegador web para auditar a cobertura por classe e método (limite mínimo de qualidade de **50%** configurado).
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+---
 
-You can then execute your native executable with: `./target/auth-service-1.0.0-SNAPSHOT-runner`
+## 🎛️ Observabilidade
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+O serviço expõe telemetria rica em tempo real para monitoramento corporativo:
+* **Endpoint de Métricas**: `GET http://localhost:8081/q/metrics`
+* **Métricas Expostas**: Latência de requisições, status HTTP, uso de memória Heap JVM, taxa de Garbage Collector e threads ativas.
+* **Integração**: Coletado pelo Prometheus e encaminhado ao Grafana Cloud via `remote_write` (conforme detalhado no repositório geral de infraestrutura).
 
-## Related Guides
+---
 
-- SmallRye JWT Build ([guide](https://quarkus.io/guides/security-jwt-build)): Create JSON Web Token with SmallRye JWT Build API
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
+## 📖 Documentação da API (Swagger / OpenAPI)
 
-## Provided Code
+O microsserviço está configurado com suporte nativo ao **Swagger UI** e geração de especificação **OpenAPI** via extensão `quarkus-smallrye-openapi`.
 
-### REST
+### 🌐 Endpoints de Acesso em Desenvolvimento (DEV)
 
-Easily start your REST Web Services
+Em ambiente de desenvolvimento (local ou na nuvem), você pode acessar a documentação diretamente no microsserviço (completamente independente do API Gateway):
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+* **Swagger UI (Interface Visual)**: `http://localhost:8080/q/swagger-ui/`
+  * No Render (DEV): [https://petshop-auth-service-dev.onrender.com/q/swagger-ui/](https://petshop-auth-service-dev.onrender.com/q/swagger-ui/)
+* **OpenAPI Spec (Esquema JSON)**: `http://localhost:8080/q/openapi`
+  * No Render (DEV): [https://petshop-auth-service-dev.onrender.com/q/openapi](https://petshop-auth-service-dev.onrender.com/q/openapi)
+
+### 🔒 Controle de Ambientes e Segurança
+
+Para alinhar segurança e performance em produção/homologação, a exibição da documentação segue esta estratégia:
+
+1. **Inclusão na Compilação (`Build Time`)**:
+   A propriedade `quarkus.swagger-ui.always-include=true` está configurada no arquivo principal `application.properties`. Isso garante que o Quarkus compile e empacote os arquivos estáticos do Swagger no JAR de produção gerado no Dockerfile.
+2. **Bloqueio em Homologação/Produção (`Runtime`)**:
+   Para evitar a exposição pública indesejada de ferramentas de teste, o Swagger é desativado em tempo de execução no perfil de homologação através da propriedade:
+   ```properties
+   quarkus.swagger-ui.enable=false
+   ```
+   Qualquer tentativa de acesso fora do ambiente DEV retornará erro `404 Not Found`.
+
+---
+
+## 🚀 Pipeline de CI/CD (GitHub Actions)
+
+Este repositório possui fluxos totalmente automatizados integrando as melhores práticas DevOps:
+
+1. **Continuous Integration (`ci.yml`)**:
+   * Executado a cada push/pull request para as branches `main` e `develop`.
+   * Realiza a compilação e validação do código com Java 21.
+   * Envia relatórios estatísticos de qualidade para o **SonarCloud** (Project Key: `ocsane-figueira_petshop-auth-service`).
+   * Para pushes aprovados em `main`, constrói a imagem Docker oficial multi-stage e envia para o Docker Hub com tags SHA e `main` (`ocsane/petshop-auth-service`).
+
+2. **Automatic Release (`release.yml`)**:
+   * Executado na branch `main` pós-CI bem-sucedido.
+   * Utiliza **Semantic Release** para analisar os commits convencionais e atualizar o SemVer no GitHub automaticamente.
+
+3. **Continuous Deployment (`cd.yml`)**:
+   * O fluxo monitora a conclusão do CI. Caso a validação de testes finalize com sucesso:
+     * Branch `develop`: Invoca o webhook do Render para atualizar o ambiente de desenvolvimento (`petshop-auth-service-dev`).
+     * Branch `main`: Invoca o webhook do Render para atualizar o ambiente de produção (`petshop-auth-service`).
