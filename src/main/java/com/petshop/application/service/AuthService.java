@@ -1,11 +1,13 @@
 package com.petshop.application.service;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.petshop.application.dto.AuthResponse;
 import com.petshop.application.dto.LoginRequest;
 import com.petshop.domain.exception.InvalidCredentialsException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class AuthService {
@@ -20,7 +22,7 @@ public class AuthService {
     String clientPassword;
 
     public AuthResponse authenticate(LoginRequest request) {
-        // Usuários simulados em memória para fins didáticos (Sem DB teste)
+        // Usuários simulados em memória para fins didáticos (Sem DB teste novo)
         if ("admin".equals(request.getUsername()) && adminPassword.equals(request.getPassword())) {
             String token = tokenIssuerService.generateToken(request.getUsername(), "ADMIN");
         
