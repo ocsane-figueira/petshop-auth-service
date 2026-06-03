@@ -125,5 +125,3 @@ Este repositório possui fluxos totalmente automatizados integrando as melhores 
    * O fluxo monitora a conclusão do CI. Caso a validação de testes finalize com sucesso:
      * Branch `develop`: Invoca o webhook do Render para atualizar o ambiente de desenvolvimento (`petshop-auth-service-dev`).
      * Branch `main`: Invoca o webhook do Render para atualizar o ambiente de produção (`petshop-auth-service`).
-
-<!-- trigger-release: fix to force semantic release bump -->
