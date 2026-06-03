@@ -22,7 +22,7 @@ public class AuthService {
     String clientPassword;
 
     public AuthResponse authenticate(LoginRequest request) {
-        // Usuários simulados em memória para fins didáticos (Sem DB teste novo agora eh oficial deus abensoe)
+        // Usuários simulados em memória para fins didáticos (Sem DB teste novo agora eh oficial deus abensoe teste stes)
         if ("admin".equals(request.getUsername()) && adminPassword.equals(request.getPassword())) {
             String token = tokenIssuerService.generateToken(request.getUsername(), "ADMIN");
         
