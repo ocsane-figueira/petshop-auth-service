@@ -41,7 +41,7 @@ jobs:
       - name: Extrair metadata para o Docker
         if: success() && github.ref == 'refs/heads/main'
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ocsane/petshop-auth-service
           tags: |
