@@ -50,7 +50,7 @@ jobs:
 
       - name: Build e Push da Imagem Docker
         if: success() && github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
